@@ -9,7 +9,7 @@ height = 700
 width = 400
 screen = pygame.display.set_mode((width, height))
 
-BLACK = (0, 0, 0)
+black = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
@@ -19,6 +19,7 @@ BUTTON_HEIGHT = 50
 
 start_button_rect = pygame.Rect((width/2 - BUTTON_WIDTH/2, height/2 - BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
 quit_button_rect = pygame.Rect((width/2 - BUTTON_WIDTH/2, height/2 + BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
+howtoplay_button_rect =  pygame.Rect((width/2 - BUTTON_WIDTH/2, height/3 - BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
 
 # Colors To Be used in the game
 gray = (100, 100, 100)
@@ -102,19 +103,22 @@ level_passed = False
 
 # Draw rectangle at the start of the game
 pygame.draw.rect(screen,red, (0,50,width,150))
-# # Show level 1 start pop-up message
-# easygui.msgbox("Level 1: Stop At Pedestrian Crossing\nControls: Use Up And Down Arrow Key To Control The Car", title="Level 1")
+
 
 def draw_menu():
     # Draw the menu screen
     screen.fill(WHITE)
 
     # Draw the Start button
-    start_button_text = font.render("Start", True, BLACK)
+    start_button_text = font.render("Start", True, black)
     screen.blit(start_button_text, start_button_rect)
 
+    # Draw the how to play button
+    howtoplay_button_text = font.render("How To Play", True, black)
+    screen.blit(howtoplay_button_text, howtoplay_button_rect)
+
     # Draw the Quit button
-    quit_button_text = font.render("Quit", True, BLACK)
+    quit_button_text = font.render("Quit", True, black)
     screen.blit(quit_button_text, quit_button_rect)
 
     pygame.display.update()
@@ -135,10 +139,10 @@ def game_loop():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
-                playerY -= 5
+                playerY -= 0.1
         if keys[pygame.K_DOWN]:
             if playerY < height - car_height:
-                playerY += 5
+                playerY += 0.1
         if keys[pygame.K_LEFT]:
                 playerX = 140        
         if keys[pygame.K_RIGHT]:
@@ -211,4 +215,3 @@ while True:
                 sys.exit
             
     pygame.display.update()
-    
