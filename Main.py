@@ -1,5 +1,5 @@
 import pygame
-import easygui
+import sys
 
 # Initialising the game
 pygame.init()
@@ -9,15 +9,27 @@ height = 700
 width = 400
 screen = pygame.display.set_mode((width, height))
 
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+font = pygame.font.Font(None, 32)
+BUTTON_WIDTH = 120
+BUTTON_HEIGHT = 50  
+
+start_button_rect = pygame.Rect((width/2 - BUTTON_WIDTH/2, height/2 - BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
+quit_button_rect = pygame.Rect((width/2 - BUTTON_WIDTH/2, height/2 + BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
+
 # Colors To Be used in the game
 gray = (100, 100, 100)
 green = (76, 208, 56)
 red = (200, 0, 0)
 white = (255, 255, 255)
-brown = (101, 67, 33)
+yellow = (255, 240, 60)
 
 # road and edge markers
-road = (155, 0, 100, height)
+road = (140, 0, 120, height)
+roadmark_width = int(width/80)
 
 # Title and icon
 pygame.display.set_caption("Traffic Signs Pro")
@@ -40,11 +52,36 @@ y1 = 250
 def stop():
     screen.blit(stopImg,(x1,y1))
 
+# Obstacle Img
+obImg = pygame.image.load('images/obstacle.png')
+c=200
+d=200
+
+def obstacle():
+    screen.blit(obImg,(c,d))
+
+# Hole Img
+holeimg = pygame.image.load('images/hole.png')
+e=139
+f=340
+
+def hole():
+    screen.blit(holeimg,(e,f))
+
+# diversion 
+divimg = pygame.image.load('images/diversion.png')
+g=141
+h=400
+
+def div():
+    screen.blit(divimg,(g,h))
+
+
 # Car Image
 carImg = pygame.image.load('images/car.png')
 car_width = carImg.get_width()
 car_height = carImg.get_height()
-playerX = 173
+playerX = width/2.9
 playerY = 600
 
 def player():
@@ -52,8 +89,8 @@ def player():
 
 # pedestrian crossing
 pedesImg = pygame.image.load('images/pedes.png')
-a = 155
-b = 5
+a = 150
+b = 10
 
 def pedes():
     pedesImg_scaled = pygame.transform.scale(pedesImg, (100, 100))  # Change the size (50, 50) to the desired size
@@ -62,80 +99,116 @@ def pedes():
 # boolean variable for level_passed
 level_passed = False
 
-# Show level 1 start pop-up message
-easygui.msgbox("Level 1: Stop At Pedestrian Crossing\nControls: Use Up And Down Arrow Key To Control The Car", title="Level 1")
 
-# game Loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+# Draw rectangle at the start of the game
+pygame.draw.rect(screen,red, (0,50,width,150))
+# # Show level 1 start pop-up message
+# easygui.msgbox("Level 1: Stop At Pedestrian Crossing\nControls: Use Up And Down Arrow Key To Control The Car", title="Level 1")
 
-    # Check for arrow key events
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_UP]:
-        if playerY > 0:
-            playerY -= 0.1
-    if keys[pygame.K_DOWN]:
-        if playerY < height - car_height:
-            playerY += 0.1
+def draw_menu():
+    # Draw the menu screen
+    screen.fill(WHITE)
 
-    # Checking if car's final position is below the pedes object
-    if playerY > b and playerY < 590:
-        level_passed = True
+    # Draw the Start button
+    start_button_text = font.render("Start", True, BLACK)
+    screen.blit(start_button_text, start_button_rect)
 
-    # Checking if car stops at more than y-200px
-    if playerY + car_height > y :
-        level_passed = False
+    # Draw the Quit button
+    quit_button_text = font.render("Quit", True, BLACK)
+    screen.blit(quit_button_text, quit_button_rect)
 
-    # grass draw
-    screen.fill(green)
-
-    # road draw
-    pygame.draw.rect(screen, gray, road)
-
-    # draw dotted road line
-    dot_spacing = 20  # spacing between dots
-    dot_size = 2  # size of dots
-    dot_color = white  # color of dots
-
-    # calculate the number of dots needed based on the height of the road
-    num_dots = road[3] // dot_spacing
-
-    # calculate the y-coordinate of the first dot
-    first_dot_y = road[1] + (road[3] - num_dots * dot_spacing) // 2
-
-    # draw the dotted line
-    for i in range(num_dots):
-        dot_y = first_dot_y + i * dot_spacing
-        pygame.draw.circle(screen, dot_color, (road[0] + road[2] // 2, dot_y), dot_size)
-
-    ped()
-    stop()
-    pedes()
-    player()
-
-    # Displaying level_passed value on the window
-    font = pygame.font.SysFont(None, 22)
-    text = font.render("Level Passed: " + str(level_passed), True, white)
-    screen.blit(text, (10, 10))
-    
     pygame.display.update()
 
-    # Check if level is passed and restart game
-    if level_passed:
-        pygame.time.delay(1000)  # Delay for 1 second
-        playerY = 600  # Reset car position to initial
+# Draw the menu screen initially
+draw_menu()
 
-    # Show restart confirmation message box
-        choice = easygui.buttonbox("Level Passed! Do you want to restart?", choices=["Yes", "No"])
-        if choice == "No":
-            running = False
-        elif choice == "Yes":
-            continue
-        else:
-            print("Invalid input. Game will exit.") 
-            running = False
+# game Loop
+def game_loop():
+    global playerX, playerY
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-pygame.quit()
+        # Check for arrow key events
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            if playerY > 0:
+                playerY -= 5
+        if keys[pygame.K_DOWN]:
+            if playerY < height - car_height:
+                playerY += 5
+        if keys[pygame.K_LEFT]:
+                playerX = 140        
+        if keys[pygame.K_RIGHT]:
+                playerX = 200
+
+
+        # Checking if car's final position is below the pedes object
+        if playerY > b and playerY < 590:
+            level_passed = True
+
+        # Checking if car stops at more than y-200px
+        if playerY + car_height > y :
+            level_passed = False
+
+        # grass draw
+        screen.fill(green)
+
+        # road draw
+        pygame.draw.rect(screen, gray, road)
+        # Yellow line draw
+        pygame.draw.rect(screen,yellow,(width/2 - roadmark_width/2, 0,roadmark_width,height))
+
+        ped()
+        stop()
+        pedes()
+        obstacle()
+        hole()
+        div()
+        player()
+
+
+        # Displaying level_passed value on the window
+        font = pygame.font.SysFont(None, 22)
+        text = font.render("Level Passed: " + str(level_passed), True, white)
+        screen.blit(text, (10, 10))
+
+        # Show Banner when level passed
+        if level_passed:
+            pygame.draw.rect(screen, red, (0, 50, width, 150))
+            font = pygame.font.SysFont(None, 18)
+            text2 = font.render("Level Passed Would you Like to Restart? Press Y or N" ,True,white)
+            screen.blit(text2, (49,120))
+            # Check if level is passed and restart game
+            if level_passed:
+                if keys[pygame.K_y]:
+                    playerX = width/2.9
+                    playerY = 600
+                    level_passed = False  # Reset car position to initial
+                else:
+                    if keys[pygame.K_n]:
+                        running = False
+
+        pygame.display.update()
+
+    pygame.quit()
+
+draw_menu()
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if start_button_rect.collidepoint(mouse_pos):
+                game_loop()
+            elif quit_button_rect.collidepoint(mouse_pos):
+                pygame.quit()
+                sys.exit
+            
+    pygame.display.update()
+    
