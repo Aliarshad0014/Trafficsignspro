@@ -9,24 +9,26 @@ height = 700
 width = 400
 screen = pygame.display.set_mode((width, height))
 
-black = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+# Menu bottons height and width 
 font = pygame.font.Font(None, 32)
-BUTTON_WIDTH = 120
-BUTTON_HEIGHT = 50  
+button_width = 120
+button_height = 50  
 
-start_button_rect = pygame.Rect((width/2 - BUTTON_WIDTH/2, height/2 - BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
-quit_button_rect = pygame.Rect((width/2 - BUTTON_WIDTH/2, height/2 + BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
-howtoplay_button_rect =  pygame.Rect((width/2 - BUTTON_WIDTH/2, height/3 - BUTTON_HEIGHT), (BUTTON_WIDTH, BUTTON_HEIGHT))
+start_button_rect = pygame.Rect((170,259), (button_width, button_height))
+quit_button_rect = pygame.Rect((175,420), (button_width, button_height))
+howtoplay_button_rect =  pygame.Rect((140,340), (button_width, button_height))
+Sedan_rect = pygame.Rect((30, 600), (button_width, button_height))
+Suv_rect = pygame.Rect((180, 600), (button_width, button_height))
+Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
 
 # Colors To Be used in the game
 gray = (100, 100, 100)
-green = (76, 208, 56)
+green = (69,139,116)
 red = (200, 0, 0)
 white = (255, 255, 255)
 yellow = (255, 240, 60)
+black = (0, 0, 0)
+white = (255, 255, 255)
 
 # road and edge markers
 road = (140, 0, 120, height)
@@ -57,17 +59,21 @@ def stop():
 obImg = pygame.image.load('images/obstacle.png')
 c=200
 d=200
+ob_rect = pygame.Rect(c, d, obImg.get_width(), obImg.get_height())
 
 def obstacle():
     screen.blit(obImg,(c,d))
+    pygame.draw.rect(screen, red, ob_rect, 2)
 
 # Hole Img
 holeimg = pygame.image.load('images/hole.png')
 e=139
 f=340
+hole_rect = pygame.Rect(e, f, holeimg.get_width(), holeimg.get_height())
 
 def hole():
     screen.blit(holeimg,(e,f))
+    pygame.draw.rect(screen, red, hole_rect, 2)
 
 # diversion 
 divimg = pygame.image.load('images/diversion.png')
@@ -87,27 +93,47 @@ playerY = 600
 
 def player():
     screen.blit(carImg, (playerX, playerY))
+    player_rect = pygame.Rect(playerX, playerY, carImg.get_width(), carImg.get_height())
+    pygame.draw.rect(screen, red, player_rect, 2)
 
 # pedestrian crossing
 pedesImg = pygame.image.load('images/pedes.png')
+pedesImg_scaled = pygame.transform.scale(pedesImg, (100, 100))
 a = 150
 b = 10
+pedes_rect = pygame.Rect(a, b+25, pedesImg_scaled.get_width(), pedesImg_scaled.get_height() - 50)
 
 def pedes():
-    pedesImg_scaled = pygame.transform.scale(pedesImg, (100, 100))  # Change the size (50, 50) to the desired size
     screen.blit(pedesImg_scaled, (a, b))
+    pygame.draw.rect(screen, red, pedes_rect, 2)
 
 # boolean variable for level_passed
 level_passed = False
 
-
 # Draw rectangle at the start of the game
 pygame.draw.rect(screen,red, (0,50,width,150))
 
+def level_failed():
+    global playerX, level_passed, playerY, running
+    pygame.draw.rect(screen, red, (0, 50, width, 150))
+    font = pygame.font.SysFont(None, 18)
+    text2 = font.render("Level Failed Would you Like to Restart? Press Y or N" ,True,white)
+    screen.blit(text2, (49,120))
+    pygame.display.update()
+    # Check for arrow key events
+    keys = pygame.key.get_pressed()
+    if not level_passed:
+        if keys[pygame.K_y]:
+            playerX = width/2.9
+            playerY = 600
+            level_passed = False  # Reset car position to initial
+        elif keys[pygame.K_n]:
+            pygame.quit()
 
 def draw_menu():
-    # Draw the menu screen
-    screen.fill(WHITE)
+    # Draw the menu background image
+    menu_bg_image = pygame.image.load("images/TFPF.png")
+    screen.blit(menu_bg_image,(0,0))
 
     # Draw the Start button
     start_button_text = font.render("Start", True, black)
@@ -121,14 +147,36 @@ def draw_menu():
     quit_button_text = font.render("Quit", True, black)
     screen.blit(quit_button_text, quit_button_rect)
 
+    # Draw the Sedan button
+    Sedan_text = font.render("Sedan", True, black)
+    screen.blit(Sedan_text, Sedan_rect)
+
+    # Draw the Suv Button
+    Suv_text = font.render("Suv", True, black)
+    screen.blit(Suv_text, Suv_rect)
+
+    # Draw the Sports Button
+    Sports_text = font.render("Sports", True, black)
+    screen.blit(Sports_text, Sports_rect)
+
     pygame.display.update()
 
-# Draw the menu screen initially
-draw_menu()
 
-# game Loop
+def draw_how_to_play_menu():
+    # idhar dekh bharway
+    # add htp image to images, change image path below, then define how_to_play_rect on top with the others
+    # then uncomment the elif statement in menu loop
+    # Draw the menu background image
+    menu_bg_image = pygame.image.load("images/TFPF.png")
+    screen.blit(menu_bg_image,(0,0))
+
+    # Draw the Start button
+    start_button_text = font.render("Start", True, black)
+    screen.blit(start_button_text, start_button_rect)
+
+
 def game_loop():
-    global playerX, playerY
+    global playerX, playerY, level_passed
     running = True
     while running:
         for event in pygame.event.get():
@@ -139,14 +187,14 @@ def game_loop():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
-                playerY -= 0.1
+                playerY -= 1
         if keys[pygame.K_DOWN]:
             if playerY < height - car_height:
                 playerY += 0.1
         if keys[pygame.K_LEFT]:
-                playerX = 140        
+            playerX = 140
         if keys[pygame.K_RIGHT]:
-                playerX = 200
+            playerX = 200
 
 
         # Checking if car's final position is below the pedes object
@@ -154,7 +202,7 @@ def game_loop():
             level_passed = True
 
         # Checking if car stops at more than y-200px
-        if playerY + car_height > y :
+        if playerY + car_height > 200:
             level_passed = False
 
         # grass draw
@@ -163,7 +211,7 @@ def game_loop():
         # road draw
         pygame.draw.rect(screen, gray, road)
         # Yellow line draw
-        pygame.draw.rect(screen,yellow,(width/2 - roadmark_width/2, 0,roadmark_width,height))
+        pygame.draw.rect(screen, yellow, (width/2 - roadmark_width/2, 0, roadmark_width, height))
 
         ped()
         stop()
@@ -195,23 +243,45 @@ def game_loop():
                     if keys[pygame.K_n]:
                         running = False
 
+
+        player_rect = pygame.Rect(playerX, playerY, carImg.get_width(), carImg.get_height())
+        # Check for collision
+        if player_rect.colliderect(hole_rect) or player_rect.colliderect(ob_rect) or player_rect.colliderect(pedes_rect):
+            level_failed()
+
         pygame.display.update()
 
     pygame.quit()
 
-draw_menu()
-
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            if start_button_rect.collidepoint(mouse_pos):
-                game_loop()
-            elif quit_button_rect.collidepoint(mouse_pos):
+def main_menu_loop():
+    global carImg
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit
-            
-    pygame.display.update()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if start_button_rect.collidepoint(mouse_pos):
+                    game_loop()
+
+                # elif how_to_play_button_rect.collidepoint(mouse_pos):
+                #     draw_how_to_play_menu()
+                    
+                elif Sedan_rect.collidepoint(mouse_pos):
+                    carImg = pygame.image.load('images/car.png')
+
+                elif Suv_rect.collidepoint(mouse_pos):
+                    carImg = pygame.image.load('images/car3.png')
+
+                elif Sports_rect.collidepoint(mouse_pos):
+                    carImg = pygame.image.load('images/car2.png')
+                
+                elif quit_button_rect.collidepoint(mouse_pos):
+                    pygame.quit()
+                    sys.exit
+        pygame.display.update()
+
+
+draw_menu()
+main_menu_loop()
