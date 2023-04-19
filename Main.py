@@ -17,6 +17,7 @@ button_height = 50
 start_button_rect = pygame.Rect((170,259), (button_width, button_height))
 quit_button_rect = pygame.Rect((175,420), (button_width, button_height))
 how_to_play_rect =  pygame.Rect((140,340), (button_width, button_height))
+ok_button_rect = pygame.Rect((170,600), (button_width, button_height))
 Sedan_rect = pygame.Rect((30, 600), (button_width, button_height))
 Suv_rect = pygame.Rect((180, 600), (button_width, button_height))
 Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
@@ -79,9 +80,11 @@ def hole():
 divimg = pygame.image.load('images/diversion.png')
 g=125
 h=400
+div_rect = pygame.Rect(g, h, divimg.get_width(), divimg.get_height())
 
 def div():
     screen.blit(divimg,(g,h))
+    pygame.draw.rect(screen, red, div_rect, 2)
 
 
 # Car Image
@@ -163,14 +166,12 @@ def draw_menu():
 
 
 def draw_how_to_play_menu():
-   
-    # Draw the menu background image
     menu_bg_image = pygame.image.load("images/HTP.png")
     screen.blit(menu_bg_image,(0,0))
 
     # Draw the Start button
-    start_button_text = font.render("Start", True, black)
-    screen.blit(start_button_text, start_button_rect)
+    ok_button_text = font.render("OK", True, black)
+    screen.blit(ok_button_text, ok_button_rect)
 
 
 def game_loop():
@@ -185,7 +186,7 @@ def game_loop():
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
-                playerY -= 1
+                playerY -= 0.1
         if keys[pygame.K_DOWN]:
             if playerY < height - car_height:
                 playerY += 0.1
@@ -193,15 +194,6 @@ def game_loop():
             playerX = 120
         if keys[pygame.K_RIGHT]:
             playerX = 220
-
-
-        # Checking if car's final position is below the pedes object
-        if playerY > b and playerY < 590:
-            level_passed = True
-
-        # Checking if car stops at more than y-200px
-        if playerY + car_height > 200:
-            level_passed = False
 
         # grass draw
         screen.fill(green)
@@ -241,11 +233,18 @@ def game_loop():
                     if keys[pygame.K_n]:
                         running = False
 
+        # Checking if car's final position is below the pedes object
+        if playerY > b and playerY < 300:
+            level_passed = True
+
+        # Checking if car stops at more than a certain point
+        if playerY + car_height > 155:
+            level_passed = False
 
         player_rect = pygame.Rect(playerX, playerY, carImg.get_width(), carImg.get_height())
-
         # Check for collision
-        if player_rect.colliderect(hole_rect) or player_rect.colliderect(ob_rect) or player_rect.colliderect(pedes_rect):
+        if player_rect.colliderect(hole_rect) or player_rect.colliderect(ob_rect) or player_rect.colliderect(pedes_rect) or player_rect.colliderect(div_rect):
+            level_passed = False
             level_failed()
 
         pygame.display.update()
@@ -266,6 +265,9 @@ def main_menu_loop():
 
                 elif how_to_play_rect.collidepoint(mouse_pos):
                     draw_how_to_play_menu()
+
+                elif ok_button_rect.collidepoint(mouse_pos):
+                    draw_menu()
                     
                 elif Sedan_rect.collidepoint(mouse_pos):
                     carImg = pygame.image.load('images/HTP.png')
