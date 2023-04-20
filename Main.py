@@ -64,7 +64,6 @@ ob_rect = pygame.Rect(c, d, obImg.get_width(), obImg.get_height())
 
 def obstacle():
     screen.blit(obImg,(c,d))
-    pygame.draw.rect(screen, red, ob_rect, 2)
 
 # Hole Img
 holeimg = pygame.image.load('images/hole.png')
@@ -74,7 +73,6 @@ hole_rect = pygame.Rect(e, f, holeimg.get_width(), holeimg.get_height())
 
 def hole():
     screen.blit(holeimg,(e,f))
-    pygame.draw.rect(screen, red, hole_rect, 2)
 
 # diversion 
 divimg = pygame.image.load('images/diversion.png')
@@ -84,7 +82,6 @@ div_rect = pygame.Rect(g, h, divimg.get_width(), divimg.get_height())
 
 def div():
     screen.blit(divimg,(g,h))
-    pygame.draw.rect(screen, red, div_rect, 2)
 
 
 # Car Image
@@ -96,8 +93,6 @@ playerY = 600
 
 def player():
     screen.blit(carImg, (playerX, playerY))
-    player_rect = pygame.Rect(playerX, playerY, carImg.get_width(), carImg.get_height())
-    pygame.draw.rect(screen, red, player_rect, 2)
 
 # pedestrian crossing
 pedesImg = pygame.image.load('images/pedes.png')
@@ -108,7 +103,6 @@ pedes_rect = pygame.Rect(a, b+25, pedesImg_scaled.get_width(), pedesImg_scaled.g
 
 def pedes():
     screen.blit(pedesImg_scaled, (a, b))
-    pygame.draw.rect(screen, red, pedes_rect, 2)
 
 # boolean variable for level_passed
 level_passed = False
@@ -117,7 +111,7 @@ level_passed = False
 pygame.draw.rect(screen,red, (0,50,width,150))
 
 def level_failed():
-    global playerX, level_passed, playerY, running
+    global playerX, level_passed, playerY
     pygame.draw.rect(screen, red, (0, 200, width, 150))
     font = pygame.font.SysFont(None, 18)
     text2 = font.render("Level Failed Would you Like to Restart? Press Y or N" ,True,white)
@@ -127,7 +121,7 @@ def level_failed():
     keys = pygame.key.get_pressed()
     if not level_passed:
         if keys[pygame.K_y]:
-            playerX = width/2.9
+            playerX = width/3.3
             playerY = 600
             level_passed = False  # Reset car position to initial
         elif keys[pygame.K_n]:
@@ -166,7 +160,7 @@ def draw_menu():
 
 
 def draw_how_to_play_menu():
-    menu_bg_image = pygame.image.load("images/HTP.png")
+    menu_bg_image = pygame.image.load("images/HTPF.png")
     screen.blit(menu_bg_image,(0,0))
 
     # Draw the Start button
@@ -226,7 +220,7 @@ def game_loop():
             # Check if level is passed and restart game
             if level_passed:
                 if keys[pygame.K_y]:
-                    playerX = width/2.9
+                    playerX = width/3.3
                     playerY = 600
                     level_passed = False  # Reset car position to initial
                 else:
@@ -246,7 +240,7 @@ def game_loop():
         if player_rect.colliderect(hole_rect) or player_rect.colliderect(ob_rect) or player_rect.colliderect(pedes_rect) or player_rect.colliderect(div_rect):
             level_passed = False
             level_failed()
-
+   
         pygame.display.update()
 
     pygame.quit()
@@ -287,4 +281,5 @@ def main_menu_loop():
 draw_menu()
 main_menu_loop()
             
+    
     
