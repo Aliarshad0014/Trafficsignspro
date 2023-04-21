@@ -25,6 +25,7 @@ Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
 # Colors To Be used in the game
 gray = (100, 100, 100)
 green = (69,139,116)
+limegreen = (127,255,0)
 red = (200, 0, 0)
 white = (255, 255, 255)
 yellow = (255, 240, 60)
@@ -213,9 +214,9 @@ def game_loop():
 
         # Show Banner when level passed
         if level_passed:
-            pygame.draw.rect(screen, red, (0, 200, width, 150))
+            pygame.draw.rect(screen, limegreen, (0, 200, width, 150))
             font = pygame.font.SysFont(None, 18)
-            text2 = font.render("Level Passed Would you Like to Restart? Press Y or N" ,True,white)
+            text2 = font.render("Level Passed Would you Like to Restart? Press Y or N" ,True,black)
             screen.blit(text2, (49,265))
             # Check if level is passed and restart game
             if level_passed:
@@ -281,5 +282,6 @@ def main_menu_loop():
 draw_menu()
 main_menu_loop()
             
+    
     
     
