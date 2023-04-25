@@ -4,6 +4,9 @@ import sys
 # Initialising the game
 pygame.init()
 
+# Adding music
+pygame.mixer.music.load("Gtav.mp3")
+
 # Creating The Screen
 height = 700
 width = 400
@@ -168,6 +171,8 @@ def draw_how_to_play_menu():
     ok_button_text = font.render("OK", True, black)
     screen.blit(ok_button_text, ok_button_rect)
 
+# Initialise music
+pygame.mixer.music.play(-1)
 
 def game_loop():
     global playerX, playerY, level_passed
@@ -281,7 +286,6 @@ def main_menu_loop():
 
 draw_menu()
 main_menu_loop()
-            
     
     
     
