@@ -1,4 +1,4 @@
-import pygame
+import pygame 
 import sys
 
 # Initialising the game
@@ -26,7 +26,7 @@ Suv_rect = pygame.Rect((180, 600), (button_width, button_height))
 Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
 up_button_rect = pygame.Rect((344, 500), (button_width, button_height))
 left_button_rect = pygame.Rect((305,550), (button_width, button_height))
-right_button_rect = pygame.Rect((360, 549), (button_width, button_height))
+right_button_rect = pygame.Rect((370, 549), (button_width, button_height))
 
 # Colors To Be used in the game
 gray = (100, 100, 100)
@@ -111,6 +111,27 @@ pedes_rect = pygame.Rect(a, b+25, pedesImg_scaled.get_width(), pedesImg_scaled.g
 def pedes():
     screen.blit(pedesImg_scaled, (a, b))
 
+# Left Button 
+leftImg = pygame.image.load('images/left.png')
+i= 285
+j= 545
+def left():
+    screen.blit(leftImg,(i,j))
+
+# Right Button
+rightImg = pygame.image.load('images/right.png')
+k= 350
+l= 544
+def right():
+    screen.blit(rightImg,(k,l))
+
+# Up Button
+upImg = pygame.image.load('images/up.png')
+m= 318
+n= 500
+def up():
+    screen.blit(upImg,(m,n))
+
 # boolean variable for level_passed
 level_passed = False
 
@@ -152,7 +173,7 @@ def draw_menu():
     screen.blit(quit_button_text, quit_button_rect)
 
     # Draw the Sedan button
-    Sedan_text = font.render("Sedan", True, black)  
+    Sedan_text = font.render("Sedan", True, black)
     screen.blit(Sedan_text, Sedan_rect)
 
     # Draw the Suv Button
@@ -183,7 +204,6 @@ def game_loop():
     global playerX, playerY, level_passed
     running = True
     is_mouse_pressed = False
-    last_button_pressed = None  # add flag to keep track of last button pressed
     while running:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -192,10 +212,8 @@ def game_loop():
                     is_mouse_pressed = True
                 elif right_button_rect.collidepoint(mouse_pos):
                     playerX = 220
-                    last_button_pressed = 'right'  # update flag
                 elif left_button_rect.collidepoint(mouse_pos):
                     playerX = 120
-                    last_button_pressed = 'left'  # update flag
             elif event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_pressed = False
             elif event.type == pygame.QUIT: 
@@ -205,23 +223,16 @@ def game_loop():
         if is_mouse_pressed:
             if playerY > 0:
                 playerY -= 0.1
-        if last_button_pressed == 'right':  # check last button pressed
-                playerX = 220
-        elif last_button_pressed == 'left':
-                playerX = 120
+
+        # Check for keyboard keys event
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
                 playerY -= 0.1
-        if keys[pygame.K_DOWN]:
-            if playerY < height - car_height:
-                playerY += 0.1
         if keys[pygame.K_LEFT]:
             playerX = 120
-            last_button_pressed = 'left'  # update flag
         if keys[pygame.K_RIGHT]:
             playerX = 220
-            last_button_pressed = 'right'  # update flag
 
         # grass draw
         screen.fill(green)
@@ -237,6 +248,9 @@ def game_loop():
         obstacle()
         hole()
         div()
+        right()
+        left()
+        up()
         player()
 
 
@@ -276,13 +290,13 @@ def game_loop():
             level_failed()
 
         # Mouse React Buttons For up down left and right
-        up_button_text = font.render("up", True, black)
+        up_button_text = font.render("", True, black)
         screen.blit(up_button_text, up_button_rect)
 
-        right_button_text = font.render("right", True, black)
+        right_button_text = font.render("", True, black)
         screen.blit(right_button_text, right_button_rect)
 
-        left_button_text = font.render("left", True, black)
+        left_button_text = font.render("", True, black)
         screen.blit(left_button_text, left_button_rect)
 
         pygame.display.update()
@@ -324,3 +338,4 @@ def main_menu_loop():
 
 draw_menu()
 main_menu_loop()
+            
