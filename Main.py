@@ -1,3 +1,6 @@
+import pygame
+import sys
+
 # Initialising the game
 pygame.init()
 
