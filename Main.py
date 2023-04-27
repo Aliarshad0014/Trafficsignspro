@@ -1,8 +1,11 @@
+import pygame
+import sys
+
 # Initialising the game
 pygame.init()
 
 # Adding music
-pygame.mixer.music.load("Gtav.mp3") 
+pygame.mixer.music.load("Gtav.mp3")
 
 # Creating The Screen
 height = 700
@@ -21,6 +24,9 @@ ok_button_rect = pygame.Rect((170,600), (button_width, button_height))
 Sedan_rect = pygame.Rect((30, 600), (button_width, button_height))
 Suv_rect = pygame.Rect((180, 600), (button_width, button_height))
 Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
+up_button_rect = pygame.Rect((344, 500), (button_width, button_height))
+left_button_rect = pygame.Rect((305,550), (button_width, button_height))
+right_button_rect = pygame.Rect((360, 549), (button_width, button_height))
 
 # Colors To Be used in the game
 gray = (100, 100, 100)
@@ -146,7 +152,7 @@ def draw_menu():
     screen.blit(quit_button_text, quit_button_rect)
 
     # Draw the Sedan button
-    Sedan_text = font.render("Sedan", True, black)
+    Sedan_text = font.render("Sedan", True, black)  
     screen.blit(Sedan_text, Sedan_rect)
 
     # Draw the Suv Button
@@ -172,15 +178,37 @@ def draw_how_to_play_menu():
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)
 
+
 def game_loop():
     global playerX, playerY, level_passed
     running = True
+    is_mouse_pressed = False
+    last_button_pressed = None  # add flag to keep track of last button pressed
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if up_button_rect.collidepoint(mouse_pos):
+                    is_mouse_pressed = True
+                elif right_button_rect.collidepoint(mouse_pos):
+                    playerX = 220
+                    last_button_pressed = 'right'  # update flag
+                elif left_button_rect.collidepoint(mouse_pos):
+                    playerX = 120
+                    last_button_pressed = 'left'  # update flag
+            elif event.type == pygame.MOUSEBUTTONUP:
+                is_mouse_pressed = False
+            elif event.type == pygame.QUIT: 
                 running = False
 
-        # Check for arrow key events
+        # Check for arrow key and Mouse events
+        if is_mouse_pressed:
+            if playerY > 0:
+                playerY -= 0.1
+        if last_button_pressed == 'right':  # check last button pressed
+                playerX = 220
+        elif last_button_pressed == 'left':
+                playerX = 120
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
@@ -190,8 +218,10 @@ def game_loop():
                 playerY += 0.1
         if keys[pygame.K_LEFT]:
             playerX = 120
+            last_button_pressed = 'left'  # update flag
         if keys[pygame.K_RIGHT]:
             playerX = 220
+            last_button_pressed = 'right'  # update flag
 
         # grass draw
         screen.fill(green)
@@ -244,7 +274,17 @@ def game_loop():
         if player_rect.colliderect(hole_rect) or player_rect.colliderect(ob_rect) or player_rect.colliderect(pedes_rect) or player_rect.colliderect(div_rect):
             level_passed = False
             level_failed()
-   
+
+        # Mouse React Buttons For up down left and right
+        up_button_text = font.render("up", True, black)
+        screen.blit(up_button_text, up_button_rect)
+
+        right_button_text = font.render("right", True, black)
+        screen.blit(right_button_text, right_button_rect)
+
+        left_button_text = font.render("left", True, black)
+        screen.blit(left_button_text, left_button_rect)
+
         pygame.display.update()
 
     pygame.quit()
@@ -283,4 +323,4 @@ def main_menu_loop():
 
 
 draw_menu()
-main_menu_loop() 
+main_menu_loop()
