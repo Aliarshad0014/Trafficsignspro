@@ -1,8 +1,11 @@
-import pygame 
+import pygame
 import sys
 
 # Initialising the game
 pygame.init()
+
+# Set up the clock
+clock = pygame.time.Clock()
 
 # Adding music
 pygame.mixer.music.load("Gtav.mp3")
@@ -20,7 +23,7 @@ button_height = 50
 start_button_rect = pygame.Rect((170,259), (button_width, button_height))
 quit_button_rect = pygame.Rect((175,420), (button_width, button_height))
 how_to_play_rect =  pygame.Rect((140,340), (button_width, button_height))
-ok_button_rect = pygame.Rect((170,600), (button_width, button_height))
+ok_button_rect = pygame.Rect((180,615), (button_width, button_height))
 Sedan_rect = pygame.Rect((30, 600), (button_width, button_height))
 Suv_rect = pygame.Rect((180, 600), (button_width, button_height))
 Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
@@ -222,13 +225,13 @@ def game_loop():
         # Check for arrow key and Mouse events
         if is_mouse_pressed:
             if playerY > 0:
-                playerY -= 0.1
+                playerY -= 1.1
 
         # Check for keyboard keys event
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
-                playerY -= 0.1
+                playerY -= 1.1
         if keys[pygame.K_LEFT]:
             playerX = 120
         if keys[pygame.K_RIGHT]:
@@ -254,10 +257,8 @@ def game_loop():
         player()
 
 
-        # Displaying level_passed value on the window
+        # Font To be used
         font = pygame.font.SysFont(None, 22)
-        text = font.render("Level Passed: " + str(level_passed), True, white)
-        screen.blit(text, (10, 10))
 
         # Show Banner when level passed
         if level_passed:
@@ -299,6 +300,10 @@ def game_loop():
         left_button_text = font.render("", True, black)
         screen.blit(left_button_text, left_button_rect)
 
+        
+        # Limit the frame rate
+        clock.tick(30)  # Set the FPS to 60
+
         pygame.display.update()
 
     pygame.quit()
@@ -307,7 +312,7 @@ def main_menu_loop():
     global carImg
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT: 
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -322,7 +327,7 @@ def main_menu_loop():
                     draw_menu()
                     
                 elif Sedan_rect.collidepoint(mouse_pos):
-                    carImg = pygame.image.load('images/HTP.png')
+                    carImg = pygame.image.load('images/car.png')
 
                 elif Suv_rect.collidepoint(mouse_pos):
                     carImg = pygame.image.load('images/car3.png')
@@ -338,4 +343,3 @@ def main_menu_loop():
 
 draw_menu()
 main_menu_loop()
-            
