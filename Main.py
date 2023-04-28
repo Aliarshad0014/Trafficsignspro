@@ -4,8 +4,11 @@ import sys
 # Initialising the game
 pygame.init()
 
+# Set up the clock
+clock = pygame.time.Clock()
+
 # Adding music
-pygame.mixer.music.load("Gtav.mp3") 
+pygame.mixer.music.load("Gtav.mp3")
 
 # Creating The Screen
 height = 700
@@ -20,10 +23,13 @@ button_height = 50
 start_button_rect = pygame.Rect((170,259), (button_width, button_height))
 quit_button_rect = pygame.Rect((175,420), (button_width, button_height))
 how_to_play_rect =  pygame.Rect((140,340), (button_width, button_height))
-ok_button_rect = pygame.Rect((170,600), (button_width, button_height))
+ok_button_rect = pygame.Rect((180,615), (button_width, button_height))
 Sedan_rect = pygame.Rect((30, 600), (button_width, button_height))
 Suv_rect = pygame.Rect((180, 600), (button_width, button_height))
 Sports_rect = pygame.Rect((298, 600), (button_width, button_height))
+up_button_rect = pygame.Rect((344, 500), (button_width, button_height))
+left_button_rect = pygame.Rect((305,550), (button_width, button_height))
+right_button_rect = pygame.Rect((370, 549), (button_width, button_height))
 
 # Colors To Be used in the game
 gray = (100, 100, 100)
@@ -108,6 +114,27 @@ pedes_rect = pygame.Rect(a, b+25, pedesImg_scaled.get_width(), pedesImg_scaled.g
 def pedes():
     screen.blit(pedesImg_scaled, (a, b))
 
+# Left Button 
+leftImg = pygame.image.load('images/left.png')
+i= 285
+j= 545
+def left():
+    screen.blit(leftImg,(i,j))
+
+# Right Button
+rightImg = pygame.image.load('images/right.png')
+k= 350
+l= 544
+def right():
+    screen.blit(rightImg,(k,l))
+
+# Up Button
+upImg = pygame.image.load('images/up.png')
+m= 318
+n= 500
+def up():
+    screen.blit(upImg,(m,n))
+
 # boolean variable for level_passed
 level_passed = False
 
@@ -175,22 +202,36 @@ def draw_how_to_play_menu():
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)
 
+
 def game_loop():
     global playerX, playerY, level_passed
     running = True
+    is_mouse_pressed = False
     while running:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                if up_button_rect.collidepoint(mouse_pos):
+                    is_mouse_pressed = True
+                elif right_button_rect.collidepoint(mouse_pos):
+                    playerX = 220
+                elif left_button_rect.collidepoint(mouse_pos):
+                    playerX = 120
+            elif event.type == pygame.MOUSEBUTTONUP:
+                is_mouse_pressed = False
+            elif event.type == pygame.QUIT: 
                 running = False
 
-        # Check for arrow key events
+        # Check for arrow key and Mouse events
+        if is_mouse_pressed:
+            if playerY > 0:
+                playerY -= 1.1
+
+        # Check for keyboard keys event
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
             if playerY > 0:
-                playerY -= 0.1
-        if keys[pygame.K_DOWN]:
-            if playerY < height - car_height:
-                playerY += 0.1
+                playerY -= 1.1
         if keys[pygame.K_LEFT]:
             playerX = 120
         if keys[pygame.K_RIGHT]:
@@ -210,13 +251,14 @@ def game_loop():
         obstacle()
         hole()
         div()
+        right()
+        left()
+        up()
         player()
 
 
-        # Displaying level_passed value on the window
+        # Font To be used
         font = pygame.font.SysFont(None, 22)
-        text = font.render("Level Passed: " + str(level_passed), True, white)
-        screen.blit(text, (10, 10))
 
         # Show Banner when level passed
         if level_passed:
@@ -247,7 +289,21 @@ def game_loop():
         if player_rect.colliderect(hole_rect) or player_rect.colliderect(ob_rect) or player_rect.colliderect(pedes_rect) or player_rect.colliderect(div_rect):
             level_passed = False
             level_failed()
-   
+
+        # Mouse React Buttons For up down left and right
+        up_button_text = font.render("", True, black)
+        screen.blit(up_button_text, up_button_rect)
+
+        right_button_text = font.render("", True, black)
+        screen.blit(right_button_text, right_button_rect)
+
+        left_button_text = font.render("", True, black)
+        screen.blit(left_button_text, left_button_rect)
+
+        
+        # Limit the frame rate
+        clock.tick(30)  # Set the FPS to 60
+
         pygame.display.update()
 
     pygame.quit()
@@ -256,7 +312,7 @@ def main_menu_loop():
     global carImg
     while True:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT: 
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -271,7 +327,7 @@ def main_menu_loop():
                     draw_menu()
                     
                 elif Sedan_rect.collidepoint(mouse_pos):
-                    carImg = pygame.image.load('images/HTP.png')
+                    carImg = pygame.image.load('images/car.png')
 
                 elif Suv_rect.collidepoint(mouse_pos):
                     carImg = pygame.image.load('images/car3.png')
@@ -286,4 +342,4 @@ def main_menu_loop():
 
 
 draw_menu()
-main_menu_loop() 
+main_menu_loop()
